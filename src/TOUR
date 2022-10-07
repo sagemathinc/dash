@@ -1,5 +1,7 @@
 #	@(#)TOUR	8.1 (Berkeley) 5/31/93
 
+Actually, I'm updating this to be more accurate, maybe.  -- William Stein
+
 NOTE -- This is the original TOUR paper distributed with ash and
 does not represent the current state of the shell.  It is provided anyway
 since it provides helpful information for how the shell is structured,
@@ -63,13 +65,7 @@ tion:
 Preprocessor #define statements are copied to init.c without any
 special action to request this.
 
-INDENTATION:  The ash source is indented in multiples of six
-spaces.  The only study that I have heard of on the subject con-
-cluded that the optimal amount to indent is in the range of four
-to six spaces.  I use six spaces since it is not too big a jump
-from the widely used eight spaces.  If you really hate six space
-indentation, use the adjind (source included) program to change
-it to something else.
+INDENTATION:  The dash source is indented using tabs.
 
 EXCEPTIONS:  Code for dealing with exceptions appears in
 exceptions.c.  The C language doesn't include exception handling,
@@ -109,7 +105,7 @@ operations, but grow the stack if you run off the end:
 We now start a top-down look at the code:
 
 MAIN.C:  The main routine performs some initialization, executes
-the user's profile if necessary, and calls cmdloop.  Cmdloop is
+the user's profile if necessary, and calls cmdloop.  Cmdloop
 repeatedly parses and executes commands.
 
 OPTIONS.C:  This file contains the option processing code.  It is
@@ -143,7 +139,7 @@ porary files was complex and I never fixed all the bugs in it.
 years, and to the best of my knowledge they still haven't gotten
 it to handle temporary files correctly in obscure cases.)
 
-The text field of a NARG structure points to the text of the
+The text field of an NARG structure points to the text of the
 word.  The text consists of ordinary characters and a number of
 special codes defined in parser.h.  The special codes are:
 
@@ -190,7 +186,7 @@ CTLESC characters to begin with (so the contents of the text
 field can be written without any processing).  Other here docu-
 ments, and words which are not subject to splitting and file name
 generation, have the CTLESC characters removed during the vari-
-able and command substitution phase.  Words which are subject
+able and command substitution phase.  Words which are subject to
 splitting and file name generation have the CTLESC characters re-
 moved as part of the file name phase.
 
@@ -198,7 +194,7 @@ EXECUTION:  Command execution is handled by the following files:
         eval.c     The top level routines.
         redir.c    Code to handle redirection of input and output.
         jobs.c     Code to handle forking, waiting, and job control.
-        exec.c     Code to path searches and the actual exec sys call.
+        exec.c     Code for path searches and the actual exec sys call.
         expand.c   Code to evaluate arguments.
         var.c      Maintains the variable symbol table.  Called from expand.c.
 
@@ -218,7 +214,7 @@ control is defined.
 REDIR.C:  Ash allows file descriptors to be redirected and then
 restored without forking off a child process.  This is accom-
 plished by duplicating the original file descriptors.  The redir-
-tab structure records where the file descriptors have be dupli-
+tab structure records where the file descriptors have been dupli-
 cated to.
 
 EXEC.C:  The routine find_command locates a command, and enters
