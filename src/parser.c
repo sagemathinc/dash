@@ -119,8 +119,8 @@ STATIC int readtoken(void);
 STATIC int xxreadtoken(void);
 STATIC int pgetc_eatbnl();
 STATIC int readtoken1(int, char const *, char *, int);
-STATIC void synexpect(int) __attribute__((__noreturn__));
-STATIC void synerror(const char *) __attribute__((__noreturn__));
+STATIC void synexpect(int);
+STATIC void synerror(const char *);
 STATIC void setprompt(int);
 
 
@@ -189,6 +189,7 @@ out_eof:
 		nlflag |= 2;
 
 		n2 = andor();
+    if(!n2) return NULL;
 		tok = readtoken();
 		if (tok == TBACKGND) {
 			if (n2->type == NPIPE) {
@@ -240,6 +241,7 @@ andor(void)
 	int t;
 
 	n1 = pipeline();
+  if(!n1) return NULL;
 	for (;;) {
 		if ((t = readtoken()) == TAND) {
 			t = NAND;
@@ -251,6 +253,7 @@ andor(void)
 		}
 		checkkwd = CHKNL | CHKKWD | CHKALIAS;
 		n2 = pipeline();
+    if(!n2) return NULL;
 		n3 = (union node *)stalloc(sizeof (struct nbinary));
 		n3->type = t;
 		n3->nbinary.ch1 = n1;
@@ -276,6 +279,7 @@ pipeline(void)
 	} else
 		tokpushback++;
 	n1 = command();
+  if(!n1) return NULL;
 	if (readtoken() == TPIPE) {
 		pipenode = (union node *)stalloc(sizeof (struct npipe));
 		pipenode->type = NPIPE;
@@ -288,6 +292,7 @@ pipeline(void)
 			lp = (struct nodelist *)stalloc(sizeof (struct nodelist));
 			checkkwd = CHKNL | CHKKWD | CHKALIAS;
 			lp->n = command();
+      if(!(lp->n)) return NULL;
 			prev->next = lp;
 		} while (readtoken() == TPIPE);
 		lp->next = NULL;
@@ -304,7 +309,7 @@ pipeline(void)
 }
 
 
-
+// Returns NULL on error.
 STATIC union node *
 command(void)
 {
@@ -324,7 +329,7 @@ command(void)
 	switch (readtoken()) {
 	default:
 		synexpect(-1);
-		/* NOTREACHED */
+    return NULL;
 	case TIF:
 		n1 = (union node *)stalloc(sizeof (struct nif));
 		n1->type = NIF;
@@ -1518,7 +1523,6 @@ synexpect(int token)
 		fmtstr(msg, 64, "%s unexpected", tokname[lasttoken]);
 	}
 	synerror(msg);
-	/* NOTREACHED */
 }
 
 
@@ -1527,7 +1531,6 @@ synerror(const char *msg)
 {
 	errlinno = plinno;
 	sh_error("Syntax error: %s", msg);
-	/* NOTREACHED */
 }
 
 STATIC void

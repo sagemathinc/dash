@@ -115,11 +115,11 @@ void __inton(void);
 #define CLEAR_PENDING_INT intpending = 0
 #define int_pending() intpending
 
-void exraise(int) __attribute__((__noreturn__));
-void onint(void) __attribute__((__noreturn__));
+void exraise(int);
+void onint(void);
 extern int errlinno;
-void sh_error(const char *, ...) __attribute__((__noreturn__));
-void exerror(int, const char *, ...) __attribute__((__noreturn__));
+void sh_error(const char *, ...);
+void exerror(int, const char *, ...);
 const char *errmsg(int, int);
 
 void sh_warnx(const char *, ...);

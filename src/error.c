@@ -66,12 +66,10 @@ volatile sig_atomic_t intpending;
 int errlinno;
 
 
-static void exverror(int, const char *, va_list)
-    __attribute__((__noreturn__));
+static void exverror(int, const char *, va_list);
 
 /*
- * Called to raise an exception.  Since C doesn't include exceptions, we
- * just do a longjmp to the exception handler.  The type of exception is
+ * Called to indicate that there was an exception.   The type of exception is
  * stored in the global variable "exception".
  */
 
@@ -89,7 +87,9 @@ exraise(int e)
 	INTOFF;
 
 	exception = e;
-	longjmp(handler->loc, 1);
+  // We do NOT longjmp like in the original code -- this function just
+  // sets the exception.  Checking error codes has to get you back to the top.
+  return;
 }
 
 
@@ -112,7 +112,6 @@ onint(void) {
 	}
 	exitstatus = SIGINT + 128;
 	exraise(EXINT);
-	/* NOTREACHED */
 }
 
 static void
@@ -124,6 +123,14 @@ exvwarning2(const char *msg, va_list ap)
 
 	errs = out2;
 	name = arg0 ? arg0 : "sh";
+  int i = strlen(name);
+  while (i > 0 && name[i] != '/') {
+    i -= 1;
+  }
+  if(name[i] == '/') {
+     name = name + i + 1;
+  }
+
 	if (!commandname)
 		fmt = "%s: %d: ";
 	else
@@ -163,7 +170,6 @@ exverror(int cond, const char *msg, va_list ap)
 
 	flushall();
 	exraise(cond);
-	/* NOTREACHED */
 }
 
 
@@ -176,7 +182,6 @@ sh_error(const char *msg, ...)
 
 	va_start(ap, msg);
 	exverror(EXERROR, msg, ap);
-	/* NOTREACHED */
 	va_end(ap);
 }
 
@@ -188,7 +193,6 @@ exerror(int cond, const char *msg, ...)
 
 	va_start(ap, msg);
 	exverror(cond, msg, ap);
-	/* NOTREACHED */
 	va_end(ap);
 }
 
